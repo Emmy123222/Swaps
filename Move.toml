@@ -1,14 +1,13 @@
 [package]
-name = "AptosSwap"
+name = "aptos_swap"
 version = "1.0.0"
 authors = ["AptosSwap Team"]
 
 [addresses]
-aptos_swap = "0x3645e4adcc4bc90328f4f399b65c46583ab9252feb0dba983b8cafa226c47aec"
+aptos_swap = "0xaf2366228c2bcaeb4afdf700b349042ed71298286b32f6f2f8b9af268bacced5"
 
-[dependencies.AptosFramework]
-git = "https://github.com/aptos-labs/aptos-core.git"
-rev = "mainnet"
-subdir = "aptos-move/framework/aptos-framework"
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework", rev = "main" }
+AptosStdlib = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-stdlib", rev = "main" }
 
 [dev-dependencies]
