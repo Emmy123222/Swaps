@@ -22,6 +22,7 @@
     "@aptos-labs/wallet-adapter-react": "^3.0.0",
     "@martianwallet/aptos-wallet-adapter": "^0.0.4",
     "@rise-wallet/wallet-adapter": "^0.1.2",
+    "buffer": "^6.0.3",
     "lucide-react": "^0.344.0",
     "petra-plugin-wallet-adapter": "^0.4.3",
     "react": "^18.3.1",

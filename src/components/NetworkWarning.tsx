@@ -7,9 +7,9 @@ export function NetworkWarning() {
   const { network, connected } = useWallet();
   const { isDark } = useThemeStore();
   
-  const isDevnet = network?.name?.toLowerCase() === 'devnet';
+  const isTestnet = network?.name?.toLowerCase() === 'testnet';
   
-  if (!connected || isDevnet) {
+  if (!connected || isTestnet) {
     return null;
   }
 
@@ -32,7 +32,7 @@ export function NetworkWarning() {
               isDark ? 'text-orange-300' : 'text-orange-700'
             }`}>
               You're connected to <strong>{network?.name || 'Mainnet'}</strong>. 
-              Please switch to <strong>Devnet</strong> in your wallet to use this dApp.
+              Please switch to <strong>Testnet</strong> in your wallet to use this dApp.
             </p>
             <div className="mt-2 flex gap-2">
               <a

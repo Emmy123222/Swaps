@@ -22,7 +22,7 @@ export function SwapInterface() {
   const [showSettings, setShowSettings] = useState(false);
   const [lastSwapHash, setLastSwapHash] = useState<string | null>(null);
 
-  const isDevnet = network?.name?.toLowerCase() === 'devnet';
+  const isTestnet = network?.name?.toLowerCase() === 'testnet';
 
   // Update tokens when balances are loaded
   useEffect(() => {
@@ -68,8 +68,8 @@ export function SwapInterface() {
       return;
     }
 
-    if (!isDevnet) {
-      toast.error('Please switch to Devnet in your wallet');
+    if (!isTestnet) {
+      toast.error('Please switch to Testnet in your wallet');
       return;
     }
 
@@ -96,13 +96,13 @@ export function SwapInterface() {
     }
   };
 
-  const canSwap = fromToken && toToken && fromAmount && quote && parseFloat(fromAmount) > 0 && isDevnet;
+  const canSwap = fromToken && toToken && fromAmount && quote && parseFloat(fromAmount) > 0 && isTestnet;
   const insufficientBalance = fromToken && fromAmount && parseFloat(fromAmount) > parseFloat(fromToken.balance?.replace(',', '') || '0');
 
   return (
     <div className="w-full">
       {/* Network Warning */}
-      {account && !isDevnet && (
+      {account && !isTestnet && (
         <div className={`mb-4 p-4 rounded-xl border ${
           isDark 
             ? 'bg-orange-900/20 border-orange-700' 
@@ -111,7 +111,7 @@ export function SwapInterface() {
           <div className="flex items-center gap-2 text-sm">
             <AlertCircle className="h-4 w-4 text-orange-500" />
             <span className="text-orange-600 dark:text-orange-400 font-medium">
-              Wrong Network: Please switch to Devnet in your wallet
+              Wrong Network: Please switch to Testnet in your wallet
             </span>
           </div>
         </div>
@@ -349,8 +349,8 @@ export function SwapInterface() {
               </div>
             ) : !account ? (
               'Connect Wallet'
-            ) : !isDevnet ? (
-              'Switch to Devnet'
+            ) : !isTestnet ? (
+              'Switch to Testnet'
             ) : insufficientBalance ? (
               `Insufficient ${fromToken?.symbol} balance`
             ) : !fromToken || !toToken ? (
@@ -379,7 +379,7 @@ export function SwapInterface() {
               </span>
             </div>
             <a 
-              href={`${CONTRACT_CONFIG.NETWORK.explorerUrl}/txn/${lastSwapHash}?network=devnet`}
+              href={`${CONTRACT_CONFIG.NETWORK.explorerUrl}/txn/${lastSwapHash}?network=testnet`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-green-600 dark:text-green-400 hover:underline flex items-center gap-1 text-sm"
@@ -390,7 +390,7 @@ export function SwapInterface() {
         </div>
       )}
 
-      {/* Devnet Notice */}
+      {/* Testnet Notice */}
       <div className={`mt-4 p-4 rounded-xl border ${
         isDark 
           ? 'bg-blue-900/20 border-blue-700' 
@@ -399,7 +399,7 @@ export function SwapInterface() {
         <div className="flex items-center gap-2 text-sm">
           <Info className="h-4 w-4 text-blue-500" />
           <span className="text-blue-600 dark:text-blue-400 font-medium">
-            Devnet Testing Environment
+           Testnet Testing Environment
           </span>
         </div>
         <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">

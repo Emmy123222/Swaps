@@ -1,0 +1,212 @@
+{
+  "address": "0xaf2366228c2bcaeb4afdf700b349042ed71298286b32f6f2f8b9af268bacced5",
+  "name": "swap",
+  "friends": [],
+  "exposed_functions": [
+    {
+      "name": "initialize",
+      "visibility": "public",
+      "is_entry": true,
+      "is_view": false,
+      "generic_type_params": [],
+      "params": ["&signer"],
+      "return": []
+    },
+    {
+      "name": "add_liquidity",
+      "visibility": "public",
+      "is_entry": true,
+      "is_view": false,
+      "generic_type_params": [
+        { "constraints": [] },
+        { "constraints": [] }
+      ],
+      "params": ["&signer", "u64", "u64", "u64"],
+      "return": []
+    },
+    {
+      "name": "create_pool",
+      "visibility": "public",
+      "is_entry": true,
+      "is_view": false,
+      "generic_type_params": [
+        { "constraints": [] },
+        { "constraints": [] }
+      ],
+      "params": ["&signer", "u64", "u64"],
+      "return": []
+    },
+    {
+      "name": "get_pool_name",
+      "visibility": "public",
+      "is_entry": false,
+      "is_view": false,
+      "generic_type_params": [
+        { "constraints": [] },
+        { "constraints": [] }
+      ],
+      "params": [],
+      "return": ["0x1::string::String"]
+    },
+    {
+      "name": "get_quote",
+      "visibility": "public",
+      "is_entry": false,
+      "is_view": true,
+      "generic_type_params": [
+        { "constraints": [] },
+        { "constraints": [] }
+      ],
+      "params": ["u64", "bool"],
+      "return": ["u64"]
+    },
+    {
+      "name": "get_reserves",
+      "visibility": "public",
+      "is_entry": false,
+      "is_view": true,
+      "generic_type_params": [
+        { "constraints": [] },
+        { "constraints": [] }
+      ],
+      "params": [],
+      "return": ["u64", "u64"]
+    },
+    {
+      "name": "remove_liquidity",
+      "visibility": "public",
+      "is_entry": true,
+      "is_view": false,
+      "generic_type_params": [
+        { "constraints": [] },
+        { "constraints": [] }
+      ],
+      "params": ["&signer", "u64", "u64", "u64"],
+      "return": []
+    },
+    {
+      "name": "swap_x_to_y",
+      "visibility": "public",
+      "is_entry": true,
+      "is_view": false,
+      "generic_type_params": [
+        { "constraints": [] },
+        { "constraints": [] }
+      ],
+      "params": ["&signer", "u64", "u64"],
+      "return": []
+    },
+    {
+      "name": "swap_y_to_x",
+      "visibility": "public",
+      "is_entry": true,
+      "is_view": false,
+      "generic_type_params": [
+        { "constraints": [] },
+        { "constraints": [] }
+      ],
+      "params": ["&signer", "u64", "u64"],
+      "return": []
+    },
+    {
+      "name": "update_fee_rate",
+      "visibility": "public",
+      "is_entry": true,
+      "is_view": false,
+      "generic_type_params": [],
+      "params": ["&signer", "u64"],
+      "return": []
+    },
+    {
+      "name": "execute_swap",
+      "visibility": "public",
+      "is_entry": true,
+      "is_view": false,
+      "generic_type_params": [
+        { "constraints": [] },
+        { "constraints": [] }
+      ],
+      "params": ["&signer", "u64", "u64"],
+      "return": []
+    }
+  ],
+  "structs": [
+    {
+      "name": "LPCoin",
+      "is_native": false,
+      "is_event": false,
+      "abilities": ["store", "key"],
+      "generic_type_params": [
+        { "constraints": [] },
+        { "constraints": [] }
+      ],
+      "fields": [
+        {
+          "name": "dummy_field",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "LiquidityEvent",
+      "is_native": false,
+      "is_event": true,
+      "abilities": ["drop", "store"],
+      "generic_type_params": [],
+      "fields": [
+        { "name": "user", "type": "address" },
+        { "name": "coin_x_amount", "type": "u64" },
+        { "name": "coin_y_amount", "type": "u64" },
+        { "name": "lp_tokens", "type": "u64" },
+        { "name": "is_add", "type": "bool" },
+        { "name": "timestamp", "type": "u64" },
+        { "name": "pool", "type": "0x1::string::String" }
+      ]
+    },
+    {
+      "name": "LiquidityPool",
+      "is_native": false,
+      "is_event": false,
+      "abilities": ["key"],
+      "generic_type_params": [
+        { "constraints": [] },
+        { "constraints": [] }
+      ],
+      "fields": [
+        { "name": "coin_x_reserve", "type": "0x1::coin::Coin<T0>" },
+        { "name": "coin_y_reserve", "type": "0x1::coin::Coin<T1>" },
+        { "name": "lp_mint_cap", "type": "0x1::coin::MintCapability<0xaf2366228c2bcaeb4afdf700b349042ed71298286b32f6f2f8b9..." },
+        { "name": "lp_burn_cap", "type": "0x1::coin::BurnCapability<0xaf2366228c2bcaeb4afdf700b349042ed71298286b32f6f2f8b9..." }
+      ]
+    },
+    {
+      "name": "SwapData",
+      "is_native": false,
+      "is_event": false,
+      "abilities": ["key"],
+      "generic_type_params": [],
+      "fields": [
+        { "name": "admin", "type": "address" },
+        { "name": "fee_rate", "type": "u64" },
+        { "name": "swap_events", "type": "0x1::event::EventHandle<0xaf2366228c2bcaeb4afdf700b349042ed71298286b32f6f2f8b9af..." },
+        { "name": "liquidity_events", "type": "0x1::event::EventHandle<0xaf2366228c2bcaeb4afdf700b349042ed71298286b32f6f2f8b9af..." }
+      ]
+    },
+    {
+      "name": "SwapEvent",
+      "is_native": false,
+      "is_event": true,
+      "abilities": ["drop", "store"],
+      "generic_type_params": [],
+      "fields": [
+        { "name": "user", "type": "address" },
+        { "name": "coin_x_in", "type": "u64" },
+        { "name": "coin_y_in", "type": "u64" },
+        { "name": "coin_x_out", "type": "u64" },
+        { "name": "coin_y_out", "type": "u64" },
+        { "name": "timestamp", "type": "u64" },
+        { "name": "pool", "type": "0x1::string::String" }
+      ]
+    }
+  ]
+}

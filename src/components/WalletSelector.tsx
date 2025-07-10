@@ -98,7 +98,7 @@ export function WalletSelector() {
             <div className="flex items-center gap-2 text-xs">
               <AlertTriangle className="h-3 w-3 text-blue-500" />
               <span className="text-blue-600 dark:text-blue-400 font-medium">
-                Make sure your wallet is on Devnet
+                Make sure your wallet is on Testnet
               </span>
             </div>
           </div>

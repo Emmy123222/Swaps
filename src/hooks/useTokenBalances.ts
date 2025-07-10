@@ -5,91 +5,74 @@ import { Token } from '../types/token';
 import { APTOS_TOKENS } from '../config/tokens';
 
 export function useTokenBalances() {
-  const { account } = useWallet();
+  const { account, network, connected, wallets } = useWallet();
   const aptosClient = useAptosClient();
-  const [tokens, setTokens] = useState<Token[]>(APTOS_TOKENS);
-  const [loading, setLoading] = useState(false);
+  const [tokens, setTokens] = useState<Token[]>(APTOS_TOKENS.map(t => ({ ...t, balance: '0.000000' })));
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchBalance = useCallback(async (token: Token): Promise<string> => {
+    if (!token.verified || !connected || !account?.address) {
+      console.log(`Skipping ${token.symbol}: ${!token.verified ? 'unverified' : 'not connected'}`);
+      return '0.000000';
+    }
+
+    try {
+      const balance = token.coinType === '0x1::aptos_coin::AptosCoin'
+        ? await aptosClient.getAccountAPTAmount({
+            accountAddress: account.address,
+          })
+        : await aptosClient.getAccountCoinAmount({
+            accountAddress: account.address,
+            coinType: token.coinType,
+          });
+      const formattedBalance = (Number(balance) / 10 ** token.decimals).toFixed(6);
+      console.log(`Fetched ${token.symbol} balance for ${account.address}: ${formattedBalance}`);
+      return formattedBalance;
+    } catch (err: any) {
+      console.error(`${token.symbol} SDK failure: ${err.message}`);
+      if (err.message.includes('resource not found')) console.log(`${token.symbol} not registered for ${account.address}`);
+      else if (err.message.includes('undefined (reading \'from\')')) console.warn(`${token.symbol} Serialization error - check Buffer polyfill`);
+      return '0.000000';
+    }
+  }, [account?.address, connected, aptosClient]);
+
   const fetchTokenBalances = useCallback(async () => {
-    if (!account?.address) {
-      // Reset balances when no account
-      setTokens(APTOS_TOKENS.map(token => ({ ...token, balance: undefined })));
+    if (!connected || !account?.address || !network?.name || network.name.toLowerCase() !== 'testnet') {
+      console.warn('Invalid state:', { connected, address: account?.address, network: network?.name, wallets: wallets.map(w => w.name) });
+      setTokens(APTOS_TOKENS.map(t => ({ ...t, balance: '0.000000' })));
+      setError('Connect to Aptos Testnet with Petra wallet');
       return;
     }
 
     setLoading(true);
-    setError(null);
-    
+    console.time('Balance Fetch');
     try {
       const updatedTokens = await Promise.all(
-        APTOS_TOKENS.map(async (token) => {
-          try {
-            let balance: number;
-            
-            // For APT (native coin), use getAccountAPTAmount
-            if (token.address === '0x1::aptos_coin::AptosCoin') {
-              balance = await aptosClient.getAccountAPTAmount({
-                accountAddress: account.address,
-              });
-            } else {
-              // For other tokens, use getAccountCoinAmount
-              balance = await aptosClient.getAccountCoinAmount({
-                accountAddress: account.address,
-                coinType: token.address,
-              });
-            }
-            
-            const formattedBalance = (Number(balance) / Math.pow(10, token.decimals)).toFixed(6);
-            
-            return {
-              ...token,
-              balance: formattedBalance,
-            };
-          } catch (error) {
-            // If token doesn't exist in account, balance is 0
-            return {
-              ...token,
-              balance: '0.000000',
-            };
-          }
-        })
+        APTOS_TOKENS.map(async token => ({
+          ...token,
+          balance: await fetchBalance(token),
+        }))
       );
-
       setTokens(updatedTokens);
-    } catch (error) {
-      console.error('Error fetching token balances:', error);
-      setError('Failed to fetch token balances');
-      
-      // Set all balances to 0 on error
-      setTokens(APTOS_TOKENS.map(token => ({ ...token, balance: '0.000000' })));
+      console.log('Balances:', updatedTokens.reduce((acc, t) => ({ ...acc, [t.symbol]: t.balance }), {}));
+    } catch (err: any) {
+      console.error('Critical fetch failure:', err);
+      setError(`Balance fetch failed: ${err.message}`);
+      setTokens(APTOS_TOKENS.map(t => ({ ...t, balance: '0.000000' })));
     } finally {
       setLoading(false);
+      console.timeEnd('Balance Fetch');
     }
-  }, [account?.address, aptosClient]);
+  }, [account?.address, connected, network?.name, fetchBalance, wallets]);
 
-  // Auto-refresh balances every 10 seconds when connected
   useEffect(() => {
-    if (!account?.address) return;
-
     fetchTokenBalances();
-    
-    const interval = setInterval(() => {
-      fetchTokenBalances();
-    }, 10000); // Refresh every 10 seconds
-
+    const interval = setInterval(fetchTokenBalances, 15000); // 15s interval for stability
     return () => clearInterval(interval);
-  }, [account?.address, fetchTokenBalances]);
-
-  // Manual refresh function
-  const refetch = useCallback(() => {
-    fetchTokenBalances();
   }, [fetchTokenBalances]);
 
-  return {
-    tokens,
-    loading,
-    error,
-    refetch,
-  };
+  const refetch = useCallback(() => fetchTokenBalances(), [fetchTokenBalances]);
+
+  return { tokens, loading, error, refetch };
 }
